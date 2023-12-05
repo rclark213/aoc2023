@@ -19,6 +19,6 @@ with open('input04.txt') as f:
 # Part 2
 
 card_quants = [1] * len(card_matches)  # One copy of each card to start with
-for i, card_val in enumerate(card_matches):
+for i, card_val in enumerate(card_matches): # Go through the card matches
     card_quants[i+1:i+1+card_val] = [x + card_quants[i] for x in card_quants[i+1:i+1+card_val]]
 print('Total Cards: ', sum(card_quants))
