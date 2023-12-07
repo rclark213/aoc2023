@@ -1,11 +1,12 @@
 import re
 
-def get_lines(file):
+
+def get_lines(file): # Gets the raw lines from the file as a list
     with open(file) as f:
         lines = f.read().splitlines()
     return lines
 
-def build_data(lines):
+def build_data(lines): # Builds the seeds, seed_ranges, and maps.
     maps = {
         'seed2soil': [],
         'soil2fert': [],
@@ -47,8 +48,8 @@ def build_data(lines):
     return seeds, seed_ranges, maps
 
 
-def translate_range(rng, map):
-    # Assumption: mapped ranges are contiguous
+def translate_range(rng, map): # Turn a single source range into one or more destination ranges
+    # Assumption: mapped ranges are contiguous (well that was a bad assumption)
     new_ranges = []
     overlap = True
     working_range = rng
@@ -80,13 +81,13 @@ def translate_range(rng, map):
     new_ranges.sort(key=lambda r: r.start)
     return new_ranges
 
-def translate_multiple_ranges(rng_list, map):
+def translate_multiple_ranges(rng_list, map): # Convert multiple source ranges to destination ranges
     all_new_ranges = []
     for rng in rng_list:
         all_new_ranges.extend(translate_range(rng, map))
     return all_new_ranges
 
-def cascade_ranges(seed_ranges, maps):
+def cascade_ranges(seed_ranges, maps): # Cascade seed ranges all the way to location ranges
     working_ranges = seed_ranges
     for map in maps.values():
         working_ranges = translate_multiple_ranges(working_ranges, map)
@@ -96,4 +97,3 @@ lines = get_lines("input05.txt")
 seeds, seed_ranges, maps = build_data(lines)
 cascaded_ranges = cascade_ranges(seed_ranges, maps)
 print("Min loc: ", min([rng.start for rng in cascaded_ranges]))
-
