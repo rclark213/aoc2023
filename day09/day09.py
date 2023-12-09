@@ -11,27 +11,22 @@ def diff_down(seq_in):
             seq_out[i] = seq_in[i+1] - seq_in[i]
         seq_list_down.append(seq_out)
         seq_in = seq_out
-        print(seq_out)
         if set(seq_out) == {0}:
             at_zero = True
-    seq_list_up = seq_list_down.copy()
-    seq_list_up.reverse()
+    seq_list_up = seq_list_down[::-1]
     seq_list_up_rev = [seq[::-1] for seq in seq_list_up]
     for i in range(len(seq_list_up) - 1):
         current_caboose = seq_list_up[i][-1]
         next_caboose = seq_list_up[i+1][-1]
         new_caboose = next_caboose + current_caboose
         seq_list_up[i+1].append(new_caboose)
-        print(seq_list_up[i])
     part_1 = new_caboose
     for i in range(len(seq_list_up_rev) - 1):
         current_caboose = seq_list_up_rev[i][-1]
         next_caboose = seq_list_up_rev[i+1][-1]
         new_caboose = next_caboose - current_caboose
         seq_list_up_rev[i+1].append(new_caboose)
-        print(seq_list_up_rev[i])
     part_2 = new_caboose
-
     return part_1, part_2
 
 
