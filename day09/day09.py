@@ -14,7 +14,6 @@ def diff_down(seq_in):
 
 with open("input09.txt") as f:
     lines = f.read().splitlines()
-
 part_1_sum = 0
 part_2_sum = 0
 for line in lines:
@@ -22,6 +21,5 @@ for line in lines:
     part_1, part_2 = diff_down(seq_int)
     part_1_sum += part_1
     part_2_sum += part_2
-
 print('Part 1: ', part_1_sum)
 print('Part 2: ', part_2_sum)
