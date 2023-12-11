@@ -91,6 +91,7 @@ start = np.where(arr == 'S')
 start = (start[0][0], start[1][0])
 
 loc, character, prev_dir = look_around(start, arr) # My function is overkill. I thought I'd be generalizing it.
+dir_arr[loc] = prev_dir
 steps = [start, loc]
 looped = False
 while not looped:
@@ -104,18 +105,27 @@ while not looped:
     if loc == start:
         looped = True
 
+if dir_arr[steps[0]] != dir_arr[steps[1]]:
+    dir_arr[steps[0]] = dir_arr[steps[0]] + dir_arr[steps[1]][0]
+
+# For debugging purposes:
+
+path_arr = np.empty_like(dir_arr, dtype='U5')
+for i, step in enumerate(steps):
+    path_arr[step] = i
+
 print('Part 1: ', math.floor(len(steps)/2))
 
 # Creating a boolean array for group labeling
 
-newarr = np.ones_like(arr, dtype=bool)
+non_path_arr = np.ones_like(arr, dtype=bool)
 r = [step[0] for step in steps]
 c = [step[1] for step in steps]
-newarr[r,c] = False
+non_path_arr[r,c] = False
 
 # Find all RDLU contiguous groups. Each has a unique label integer in a new array.
 
-label, num_features = label(newarr)
+label, num_features = label(non_path_arr)
 
 # Prepping for Part 2
 
