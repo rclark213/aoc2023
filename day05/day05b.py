@@ -95,5 +95,12 @@ def cascade_ranges(seed_ranges, maps): # Cascade seed ranges all the way to loca
 
 lines = get_lines("input05.txt")
 seeds, seed_ranges, maps = build_data(lines)
+seeds_as_ranges = [range(seed, seed + 1) for seed in seeds]
+
+# Part 1
+cascaded_ranges = cascade_ranges(seeds_as_ranges, maps) # Basically retrofitting Part 2 solution to Part 1
+print('Part 1: ', min([rng.start for rng in cascaded_ranges]))
+
+# Part 2
 cascaded_ranges = cascade_ranges(seed_ranges, maps)
-print("Min loc: ", min([rng.start for rng in cascaded_ranges]))
+print("Part 2: ", min([rng.start for rng in cascaded_ranges]))

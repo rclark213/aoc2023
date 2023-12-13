@@ -1,6 +1,7 @@
 import re
 import math
 
+# MATH!
 # distance = speed * time_running
 # speed = time_pressing * (1)
 # total_time = time_pressing + time_running
@@ -20,8 +21,6 @@ with open('input06.txt') as f:
     full_time = int(''.join(re.findall(r"(\d+)", lines[0])))
     full_distance = int(''.join(re.findall(r"(\d+)", lines[1])))
 
-print(times)
-print(distances)
 solutions_prod = 1
 
 for t, d in zip(times, distances):

@@ -1,17 +1,5 @@
 import re
-import logging
-
-logging.basicConfig(filename='..\advent2023.log', filemode="w", format='%(levelname)s - %(message)s', level=logging.DEBUG)
-
-
-def log_vars(vars):
-    for k, v in vars.items():
-        logging.debug(f"{k}: {v}")
-
-
 # PART 1
-
-logging.debug('PART 1 +++++++++++++')
 
 with open("input01.txt") as file:
     last_line = False
@@ -24,14 +12,11 @@ with open("input01.txt") as file:
             ints = re.findall('[0-9]', line_text)
             value = int(ints[0] + ints[-1])
             total += value
-            log_vars({'current_line': current_line, 'ints': ints, 'value': value, 'total': total})
         else:
             last_line = True
             print('Part 1 Total: ', total)
 
 # PART 2
-
-logging.debug('Part 2 ++++++++++++++++++++')
 
 int_words = {
     "one": "1",
@@ -65,12 +50,6 @@ with open("input01.txt") as file:
 
             value = int(forward_integers_dig[0] + reverse_integers_dig[0])
             total += value
-
-            log_vars({'current_line': current_line,
-                      'forward_integers': forward_integers, 'forward_integers_dig': forward_integers_dig,
-                      'reverse integers': reverse_integers, 'reverse_integers_dig': reverse_integers_dig,
-                      'value': value, 'total': total
-                      })
 
         else:
             last_line = True

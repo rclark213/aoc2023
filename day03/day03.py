@@ -1,6 +1,5 @@
 import re
 import numpy as np
-from matplotlib import pyplot as plt
 
 whitelist = '0123456789.'
 
@@ -43,11 +42,6 @@ with open('input03.txt') as f:
 
 
     print('Total Gear Ratio: ', gear_ratio_total)
-
-
-
-
-print('end')
 
 
 

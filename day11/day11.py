@@ -1,26 +1,19 @@
 import numpy as np
 
 def update_map(map):
-
-    i = 0
-    done = False
-    while i < map.shape[1]:
-        if set(map[:, i]) <= {'.', 'M'}:
-            map[:, i] = 'M'
-            print(map.shape)
-        i += 1
-    i = 0
-    done = False
-    while i < map.shape[1]:
+    for i in range(map.shape[0]):
         if set(map[i, :]) <= {'.', 'M'}:
             map[i, :] = 'M'
-        i += 1
+    for i in range(map.shape[1]):
+        if set(map[:, i]) <= {'.', 'M'}:
+            map[:, i] = 'M'
     return map
 
 
 def calc_distance(map, factor):
     distance = 0
     galaxies = np.argwhere(map == '#')
+
     for i in range(len(galaxies)):
         for j in range(i+1, len(galaxies)):
             d1 = abs(galaxies[j][0] - galaxies[i][0]) + abs(galaxies[j][1] - galaxies[i][1])

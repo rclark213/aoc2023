@@ -1,7 +1,7 @@
 import math
-from collections import *
+from collections import namedtuple
 import numpy as np
-from scipy.ndimage import label, generate_binary_structure
+from scipy.ndimage import label
 
 Neighbors = namedtuple('Neighbors', ['R', 'D', 'L', 'U'])
 
@@ -26,16 +26,17 @@ opp_dir = {
     'U': 'D'
 }
 
-# Looks right from current cell of the dir_arr. 'U' and 'D' logic worked for my input, but might need to be flipped otherwise.
+# Looks rightward from the current non-path cell. The cell is labeled 'I' or 'O' depending on the characteristic of the
+#  first labeled cell it encounters (the edge of the array, an upward-moving wall, or a downward moving wall)
 
-def stretch(idx):
+def in_or_out(idx):
     for box in dir_arr[idx[0], idx[1]:]:
         if box != '':
-            if box == 'O': # If it encounters the right edge of the array
+            if box == 'O':  # If it encounters the right edge of the array
                 location = 'O'
-            elif 'U' in box:
+            elif right_wall_outside in box:
                 location = 'O'
-            elif 'D' in box:
+            elif right_wall_inside in box:
                 location = 'I'
             break
     return location
@@ -81,12 +82,13 @@ def keep_going(idx, prev_direction):
     return next_space, prev_direction
 
 
-with open('input10.txt') as f:
+with open('input.txt') as f:
     lines = f.read().splitlines()
 
 charmap = [list(line) for line in lines]
 arr = np.pad(np.array(charmap), 1, 'constant', constant_values='.') # Create the array and pad to avoid boundary issues
-dir_arr = np.empty_like(arr,dtype='U2') # An array to track the direction I was moving in when adding the cell to the path
+# An array to track the direction of path movement. (It's actually in the reverse direction of movement. )
+dir_arr = np.empty_like(arr,dtype='U2')
 start = np.where(arr == 'S')
 start = (start[0][0], start[1][0])
 
@@ -134,16 +136,27 @@ dir_arr[:, 0] = 'O'
 dir_arr[-1, :] = 'O'
 dir_arr[:, -1] = 'O'
 
+# Map how the direction of a wall to the right of a cell should map to being outside or inside the path
 
-io_arr = np.empty_like(dir_arr, dtype='U1') # Array where outside the path 'O' and inside the path 'I'
+steps_ordered = sorted(steps, key=lambda x: x[1])
+if 'U' in dir_arr[steps_ordered[0]]:
+    right_wall_outside = 'U'
+    right_wall_inside = 'D'
+elif 'D' in dir_arr[steps_ordered[0]]:
+    right_wall_outside = 'D'
+    right_wall_inside = 'U'
+
+# On a labeled-group basis, determine if the group is inside or outside
+
+io_arr = np.empty_like(dir_arr, dtype='U1')  # Array where outside the path 'O' and inside the path 'I'
 for lbl in range(1,num_features):
     members = np.where(label == lbl)
-    location = stretch((members[0][0], members[1][0]))
-    if location == 'I':
-        io_arr[members] = location
+    location = in_or_out((members[0][0], members[1][0]))
+    io_arr[members] = location
 
+num_cells_in_path = len(np.argwhere(io_arr == 'I'))
 
-print('Part 2: ', len(np.argwhere(io_arr == 'I')))
+print('Part 2: ', num_cells_in_path)
 
 
 

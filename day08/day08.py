@@ -26,7 +26,6 @@ target = nodes.index('ZZZ')
 
 
 current_node = start
-print(current_node)
 steps = 0
 for direction in directions:
     current_node = choices[current_node][direction]
@@ -34,14 +33,12 @@ for direction in directions:
     if current_node == target:
         break
 
-print('Steps to ZZZ: ', steps)
+print('Part 1: ', steps)
 
 # Part 2:
 
 starts = [i for i, node in enumerate(nodes) if node[-1] == 'A']
 targets = set([i for i, node in enumerate(nodes) if node[-1] == 'Z'])
-print(starts)
-print(targets)
 
 # Naive approach:
 
@@ -65,11 +62,9 @@ for start in starts:
         steps += 1
         if current_node in targets:
             intervals.append(steps)
-            print(steps)
-            print()
             break
 
 steps_to_convergence = math.lcm(*intervals)
 
 
-print('Steps to convergence: ', steps_to_convergence)
+print('Part 2: ', steps_to_convergence)
