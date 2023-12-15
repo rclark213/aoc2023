@@ -10,12 +10,12 @@ import time
 Row = namedtuple('Row', ['layout', 'dist'])
 
 def expand_rows(rows):
-    rows_expanded = []
-    for layout, dist in rows:
-        layout_new = '?'.join([layout] * 5)
-        dist_new = dist * 5
-        rows_expanded.append(Row(layout_new, dist_new))
-    return rows_expanded
+rows_expanded = []
+for layout, dist in rows:
+    layout_new = '?'.join([layout] * 5)
+    dist_new = dist * 5
+    rows_expanded.append(Row(layout_new, dist_new))
+return rows_expanded
 
 
 
