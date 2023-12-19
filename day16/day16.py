@@ -1,6 +1,6 @@
 import numpy as np
 from pprint import pprint
-import time
+
 
 def create_grid(file):
     with open(file) as f:
@@ -33,21 +33,15 @@ class Beam:
 
         if tile in 'fb':
             self.dir = angle[tile][self.dir]
-            self.wall_check()
         elif tile == '-':
             if self.dir in 'NS':
                 self.split()
                 self.status = 'dead'
-            else:
-                self.wall_check()
         elif tile == '|':
             if self.dir in 'EW':
                 self.split()
                 self.status = 'dead'
-            else:
-                self.wall_check()
-        elif tile == '.':
-            self.wall_check()
+        self.wall_check()
 
     def wall_check(self):
         if (self.dir == 'N' and self.loc[0] == 0) or \
@@ -83,17 +77,30 @@ class Beam:
 example = 'test.txt'
 real = 'input.txt'
 grid = create_grid(real)
-splits = []
-pprint(grid)
 
-beams = []
-beams.append(Beam((0, 0), 'E'))
 
-pprint(beams)
-energized = np.full_like(grid, fill_value='0', dtype='int')
-for beam in beams:
-    for point in beam.wake:
-        energized[point] = '1'
-pprint(energized)
-print(np.sum(energized))
+def energize(start_loc, start_dir):
+    global splits, beams
+    splits = []
+    beams = []
+    beams.append(Beam(start_loc, start_dir))
 
+    energized = np.full_like(grid, fill_value='0', dtype='int')
+    for beam in beams:
+        for point in beam.wake:
+            energized[point] = '1'
+    return np.sum(energized)
+
+
+t = 0
+for i in range(grid.shape[0]):
+    e1 = energize((i, 0), 'E')
+    e2 = energize((i, grid.shape[1]-1), 'W')
+    t = max(e1, e2, t)
+
+for i in range(grid.shape[1]):
+    e1 = energize((0, i), 'S')
+    e2 = energize((grid.shape[0]-1, i), 'N')
+    t = max(e1, e2, t)
+
+print('t: ', t)
