@@ -1,7 +1,3 @@
-import numpy as np
-from collections import namedtuple
-from pprint import pprint
-import copy
 
 class Node:
 
@@ -18,7 +14,6 @@ class Node:
         valid = ['^', '>', 'v', '<']
         for d, v in zip(directions, valid):
             dy, dx = d
-            print(self.y, self.x)
             if grid[self.y + dy][self.x + dx] == v:
                 exits.append((self.y + dy, self.x + dx))
         for e in exits:
@@ -36,7 +31,6 @@ def walk_path(path, grid):
     walking = True
     while walking:
         py, px = path[-1]
-        print('Walking: ', py, px)
         neighbors = []
         for dy, dx in directions:
             npy, npx = py + dy, px + dx
@@ -45,15 +39,10 @@ def walk_path(path, grid):
                     neighbors.append((npy, npx))
         match len(neighbors):
             case 1:
-                print('1 neighbor')
                 path.extend(neighbors)
-                print('Neighbor: ', neighbors[0][0])
-                print('Grid length', len(grid))
                 if neighbors[0][0] == len(grid) - 1:
-                    print('Hit maze exit')
                     walking = False
             case _:
-                print(f"{len(neighbors)} neighbors")
                 walking = False
     return path
 
@@ -90,22 +79,9 @@ def build_graph(grid):
                     if p[-1] == (v.y, v.x):
                         nodes[k].paths_in.append(new_path_key)
         queue.pop(0)
-        print('Queue: ', queue)
-        for node in queue:
-            print(nodes[node].y, nodes[node].x)
         if len(queue) == 0:
             building = False
     return nodes, paths
-
-def get_all_nodes(grid):
-    nodes = dict()
-    pass
-
-
-grid = parse_input('input.txt')
-
-nodes, paths = build_graph(grid)
-print('')
 
 def node_from_yx(coordinate):
     for k, node in nodes.items():
@@ -136,31 +112,58 @@ def traverse_paths(node):
     lengths = [chain_length(chain) for chain in chains]
     return chains[lengths.index(max(lengths))]
 
+def node_chain_length(node_chain):
+    t = 0
+    for i in range(1, len(node_chain)):
+        t += distances[(node_chain[i - 1], node_chain[i])]
+    return t
+
+
+def run_around(node, nchain):
+    choices = []
+    if 1 in nodes_adj[node]:
+        return [node, 1]
+    else:
+        for nadj in nodes_adj[node]:
+            if nadj not in nchain:
+                nchain_temp = nchain.copy()
+                nchain_temp.append(nadj)
+                chain_down = run_around(nadj, nchain_temp)
+                if chain_down is not None:
+                    choices.append(chain_down)
+        if len(choices) == 0:
+            return None
+        dists = [node_chain_length([node] + choice) for choice in choices]  # Something wrong here
+        dist_idx = dists.index(max(dists))
+        best_chain = [node]
+        best_chain.extend(choices[dist_idx])
+
+        return best_chain
+
+# Part 1
+
+grid = parse_input('input.txt')
+nodes, paths = build_graph(grid)
 max_length = chain_length(traverse_paths(0)) - 1 # For the first step
 print('Part 1: ', max_length)
 
+# Part 2
+
+nodes_adj = dict()
+for k in nodes.keys():
+    nodes_adj.update({k: set()})
+distances = dict()
+for k,v in nodes.items():
+    for p in v.paths_out:
+        n = node_from_yx(paths[p][-1])
+        d = len(paths[p]) - 1
+        nodes_adj[k].add(n)
+        nodes_adj[n].add(k)
+        distances.update({(k,n): d})
+        distances.update({(n,k): d})
 
 
-# nodeletters = 'ABCDEFGHIJKLMNOP'
-# pathletters = 'abcdefghijklmnop'
-#
-# checkgrid = copy.deepcopy(grid)
-#
-# for line in grid:
-#     print(''.join(line))
-#
-# print('')
-#
-# for k,v in paths.items():
-#     for py, px in v:
-#         checkgrid[py][px] = pathletters[k]
-#
-# for k,v in nodes.items():
-#     checkgrid[v.y][v.x] = nodeletters[k]
-#
-# for line in checkgrid:
-#     print(''.join(line))
-
-
-
-
+print('Working on Part 2. Be patient. It takes ~15 seconds...')
+long_chain = run_around(0, [0])
+total = node_chain_length(long_chain)
+print('Part 2: ', total)
