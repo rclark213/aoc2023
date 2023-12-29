@@ -139,8 +139,57 @@ def traverse_paths(node):
 max_length = chain_length(traverse_paths(0)) - 1 # For the first step
 print('Part 1: ', max_length)
 
+nodes_adj = dict()
+for k in nodes.keys():
+    nodes_adj.update({k: set()})
+distances = dict()
+for k,v in nodes.items():
+    for p in v.paths_out:
+        n = node_from_yx(paths[p][-1])
+        d = len(paths[p]) - 1
+        nodes_adj[k].add(n)
+        nodes_adj[n].add(k)
+        distances.update({(k,n): d})
+        distances.update({(n,k): d})
+
+def node_chain_length(node_chain):
+    t = 0
+    for i in range(1, len(node_chain)):
+        t += distances[(node_chain[i - 1], node_chain[i])]
+    return t
 
 
+def run_around(node, nchain):
+    print(nchain)
+    choices = []
+    if 1 in nodes_adj[node]:
+        return [node, 1]
+    else:
+        for nadj in nodes_adj[node]:
+            if nadj not in nchain:
+                nchain_temp = nchain.copy()
+                nchain_temp.append(nadj)
+                chain_down = run_around(nadj, nchain_temp)
+                if chain_down is not None:
+                    choices.append(chain_down)
+        if len(choices) == 0:
+            print('Oops')
+            return None
+        dists = [node_chain_length([node] + choice) for choice in choices]  # Something wrong here
+        dist_idx = dists.index(max(dists))
+        best_chain = [node]
+        best_chain.extend(choices[dist_idx])
+
+        return best_chain
+
+long_chain = run_around(0, [0])
+print(long_chain)
+total = node_chain_length(long_chain)
+print('Part 2: ', total)
+
+
+
+print('')
 # nodeletters = 'ABCDEFGHIJKLMNOP'
 # pathletters = 'abcdefghijklmnop'
 #
